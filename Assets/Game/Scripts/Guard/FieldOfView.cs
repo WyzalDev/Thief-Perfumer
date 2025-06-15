@@ -5,6 +5,8 @@ namespace Game.Scripts.Guard
 {
     public class FieldOfView : MonoBehaviour
     {
+        [SerializeField] private float detectionRadius;
+        
         private Mesh _mesh;
         private MeshRenderer _meshRenderer;
         private Vector3 _origin;
@@ -29,7 +31,7 @@ namespace Game.Scripts.Guard
             var rayCount = 100;
             var angle = _startingAngle;
             var angleIncrease = _fov / rayCount;
-            float viewDistance = 5f;
+            float viewDistance = detectionRadius;
 
             Vector3[] vertices = new Vector3[rayCount + 2];
             Vector2[] uv = new Vector2[vertices.Length];

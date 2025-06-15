@@ -16,6 +16,8 @@ namespace Game.Scripts.Player
         [SerializeField] private float dashForce;
         [SerializeField] private float dashDuration;
         [SerializeField] private float dashCooldown;
+        [Header("AudioSettings")]
+        [SerializeField] private float footStepPeriodicity;
         public bool IsBlocked { get; private set; }
 
         private Rigidbody2D _rigidbody;
@@ -24,8 +26,13 @@ namespace Game.Scripts.Player
         private Vector2 _direction;
         private Vector2 _lastDirection;
         private Coroutine _dashCoroutine;
+        private Animator _animator;
+        private bool _moving;
+
+        private float currentStepTime;
         private void Awake()
         {
+            _animator = GetComponent<Animator>();
             _rigidbody = GetComponent<Rigidbody2D>();
             IsBlocked = false;
             _move = InputSystem.actions.FindAction("Move");
@@ -40,14 +47,50 @@ namespace Game.Scripts.Player
             if(IsBlocked) return;
 
             _rigidbody.linearVelocity = _direction * speed;
-            var angle = Mathf.Atan2(_direction.y, _direction.x) * Mathf.Rad2Deg;
-            _rigidbody.rotation = angle;
+            // var angle = Mathf.Atan2(_direction.y, _direction.x) * Mathf.Rad2Deg;
+            // _rigidbody.rotation = angle;
         }
 
         private void Update()
         {
             _direction = _move.ReadValue<Vector2>();
             if(Vector2.zero != _direction) _lastDirection = _direction;
+
+            if (_rigidbody.linearVelocity.magnitude != 0 && !IsBlocked)
+            {
+              currentStepTime = Mathf.Clamp(currentStepTime + Time.deltaTime, 0, footStepPeriodicity);
+              if (Mathf.Approximately(currentStepTime, footStepPeriodicity))
+              {
+                  currentStepTime = 0;
+                  EventManager.InvokeOnStep();
+              }
+            }
+            else
+            {
+                currentStepTime = 0;
+            }
+            
+            Animate();
+        }
+
+        private void Animate()
+        {
+            if (_direction.magnitude > 0.1f || _direction.magnitude < - 0.1f)
+            {
+                _moving = true;
+            }
+            else
+            {
+                _moving = false;
+            }
+
+            if (_moving)
+            {
+                _animator.SetFloat("X", _direction.x);
+                _animator.SetFloat("Y", _direction.y);
+            }
+            
+            _animator.SetBool("Moving", _moving);
         }
 
         private void Dash(InputAction.CallbackContext context)
@@ -59,6 +102,7 @@ namespace Game.Scripts.Player
 
         private IEnumerator DoDash()
         {
+            EventManager.InvokeOnDash();
             IsBlocked = true;
             Debug.Log(_lastDirection.normalized);
             _rigidbody.linearVelocity = _lastDirection.normalized * dashForce;

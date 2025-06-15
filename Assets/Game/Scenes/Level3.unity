@@ -2749,9 +2749,9 @@ GameObject:
   - component: {fileID: 1118737364}
   - component: {fileID: 1118737363}
   - component: {fileID: 1118737362}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: DeadZone
-  m_TagString: Untagged
+  m_TagString: DeadZone
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 2147483647
@@ -2911,6 +2911,7 @@ MonoBehaviour:
   timeToHideSlider: 1.5
   slider: {fileID: 1782364713}
   fadePower: 0.34
+  DamageTickTime: 1
 --- !u!114 &1118737366
 MonoBehaviour:
   m_ObjectHideFlags: 0

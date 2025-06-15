@@ -18,8 +18,28 @@ MonoBehaviour:
   m_PlatformId: 84a3bb9e7420477f885e98145999eb20
   m_PlatformBuildProfile:
     rid: 8655044709549080654
-  m_OverrideGlobalSceneList: 0
-  m_Scenes: []
+  m_OverrideGlobalSceneList: 1
+  m_Scenes:
+  - m_enabled: 1
+    m_path: Assets/Game/Scenes/BootsTrap.unity
+  - m_enabled: 1
+    m_path: Assets/Game/Scenes/Level1.unity
+  - m_enabled: 1
+    m_path: Assets/Game/Scenes/Level2.unity
+  - m_enabled: 1
+    m_path: Assets/Game/Scenes/Level3.unity
+  - m_enabled: 1
+    m_path: Assets/Game/Scenes/Level4.unity
+  - m_enabled: 1
+    m_path: Assets/Game/Scenes/Level5.unity
+  - m_enabled: 1
+    m_path: Assets/Game/Scenes/SampleScene.unity
+  - m_enabled: 1
+    m_path: Assets/Game/Scenes/Tutorial1.unity
+  - m_enabled: 1
+    m_path: Assets/Game/Scenes/Tutorial2.unity
+  - m_enabled: 1
+    m_path: Assets/Game/Scenes/WinScene.unity
   m_ScriptingDefines: []
   m_PlayerSettingsYaml:
     m_Settings:

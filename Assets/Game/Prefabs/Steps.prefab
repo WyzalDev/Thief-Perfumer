@@ -508,7 +508,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bfe4aec039b3472c84c06644f7971c6d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _grayColor: {r: 0.3254902, g: 0.35686275, b: 0.38823533, a: 0.39607844}
+  _grayColor: {r: 0.3254902, g: 0.35686275, b: 0.38823533, a: 0.6039216}
   possibleColors:
   - {r: 1.0577455, g: 1.8162256, b: 0.18847604, a: 1}
   - {r: 0.116163015, g: 1.7590437, b: 1.057814, a: 1}

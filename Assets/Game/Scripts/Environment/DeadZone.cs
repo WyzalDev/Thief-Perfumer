@@ -11,10 +11,13 @@ namespace Game.Scripts.Environment
         [SerializeField] private float timeToHideSlider;
         [SerializeField] private Slider slider;
         [SerializeField] private float fadePower;
+        [SerializeField] private float DamageTickTime;
         
         private static float _currTime;
         private static bool _isEnd;
         private static Coroutine _activeSliderCoroutine;
+
+        private float currDamageTickTime;
 
         private void Awake()
         {
@@ -34,7 +37,13 @@ namespace Game.Scripts.Environment
             }
 
             slider.value = _currTime / timeToDie;
-
+            
+            currDamageTickTime = Mathf.Clamp(currDamageTickTime + Time.deltaTime, 0, DamageTickTime);
+            if (Mathf.Approximately(currDamageTickTime, DamageTickTime))
+            {
+                EventManager.InvokeOnDamageTick();
+                currDamageTickTime = 0;
+            }
             if (!Mathf.Approximately(_currTime, timeToDie) || _isEnd) return;
             _isEnd = true;
             EventManager.InvokePlayerCaught();
@@ -44,12 +53,14 @@ namespace Game.Scripts.Environment
         {
             if (_activeSliderCoroutine != null) StopCoroutine(_activeSliderCoroutine);
             slider.gameObject.SetActive(true);
+            currDamageTickTime = DamageTickTime;
         }
 
         private void OnTriggerExit2D(Collider2D other)
         {
             if (_activeSliderCoroutine != null) StopCoroutine(_activeSliderCoroutine);
             if (gameObject !=null) _activeSliderCoroutine = StartCoroutine(HideSlider());
+            currDamageTickTime = 0;
         }
 
         private IEnumerator HideSlider()

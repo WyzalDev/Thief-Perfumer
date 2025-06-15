@@ -1,4 +1,5 @@
-﻿using Game.Scripts.Steps;
+﻿using Game.Scripts.Events;
+using Game.Scripts.Steps;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -23,6 +24,7 @@ namespace Game.Scripts.Player
                 LayerMask.GetMask("FootStep"));
             if (hit != null)
             {
+                EventManager.InvokeOnInteract();
                 footStepColorController.MemorizeFootStep(hit.GetComponent<Renderer>());
             }
         }

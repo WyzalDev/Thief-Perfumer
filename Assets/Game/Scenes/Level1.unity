@@ -2339,6 +2339,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Target
       objectReference: {fileID: 0}
+    - target: {fileID: 1734769679270161124, guid: 54dd4a4721684ec47b148db8b6ae8e54, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: -6270953770400647376, guid: 7cf3e935463025b409d4722baab3c7f1, type: 3}
     - target: {fileID: 2811661946421551939, guid: 54dd4a4721684ec47b148db8b6ae8e54, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0.05
@@ -4164,9 +4168,9 @@ GameObject:
   - component: {fileID: 2027665488}
   - component: {fileID: 2027665487}
   - component: {fileID: 2027665486}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: DeadZone
-  m_TagString: Untagged
+  m_TagString: DeadZone
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 2147483647
@@ -4374,6 +4378,7 @@ MonoBehaviour:
   timeToHideSlider: 1.5
   slider: {fileID: 1837850880}
   fadePower: 0.34
+  DamageTickTime: 1
 --- !u!114 &2027665490
 MonoBehaviour:
   m_ObjectHideFlags: 0

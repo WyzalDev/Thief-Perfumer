@@ -59,7 +59,7 @@ namespace Game.Scripts.Guard
         //rotation
         private float _currentAngle;
         private float _angleVelocity;
-
+        
         private void Awake()
         {
             GuardID = _guardsCount;
@@ -84,20 +84,20 @@ namespace Game.Scripts.Guard
 
         private void Update()
         {
-            if (_agent.desiredVelocity.sqrMagnitude > 0.01f)
-            {
-                var direction = _agent.desiredVelocity.normalized;
-                var targetAngle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
-
-                _currentAngle = Mathf.SmoothDampAngle(
-                    _currentAngle,
-                    targetAngle,
-                    ref _angleVelocity,
-                    rotationSpeed * Time.deltaTime
-                );
-
-                transform.rotation = Quaternion.Euler(0, 0, _currentAngle);
-            }
+            // if (_agent.desiredVelocity.sqrMagnitude > 0.01f)
+            // {
+            //     var direction = _agent.desiredVelocity.normalized;
+            //     var targetAngle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+            //
+            //     _currentAngle = Mathf.SmoothDampAngle(
+            //         _currentAngle,
+            //         targetAngle,
+            //         ref _angleVelocity,
+            //         rotationSpeed * Time.deltaTime
+            //     );
+            //
+            //     transform.rotation = Quaternion.Euler(0, 0, _currentAngle);
+            // }
             
             fov.SetOrigin(transform.position);
             fov.SetAimDirection(_agent.desiredVelocity.normalized);
@@ -168,7 +168,7 @@ namespace Game.Scripts.Guard
             var direction = playerPoint - transform.position;
             RaycastHit2D hit = Physics2D.Raycast(transform.position, direction, radius,
                 LayerMask.GetMask("Obstacle"));
-            return hit.collider != null && hit.collider.CompareTag("Obstacle");
+            return hit.collider != null && hit.collider.CompareTag("Obstacle") && !hit.collider.CompareTag("DeadZone");
         }
 
         private IEnumerator ReactToPlayer(Vector3 playerPoint)
@@ -176,13 +176,14 @@ namespace Game.Scripts.Guard
             _lastSeenPlayerPoint = playerPoint;
             _agent.SetDestination(_lastSeenPlayerPoint);
             _agent.isStopped = true;
+            EventManager.InvokeOnDetect();
 
             var isAlreadyDetectState = GuardState == GuardState.Detect;
             SetState(GuardState.Detect);
 
-            var direction = playerPoint - transform.position;
-            var targetAngle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
-            transform.DORotate(new Vector3(0, 0, targetAngle), reactionDelay / 10);
+            //var direction = playerPoint - transform.position;
+            //var targetAngle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+            //transform.DORotate(new Vector3(0, 0, targetAngle), reactionDelay / 10);
 
             if (!isAlreadyDetectState)
                 yield return new WaitForSeconds(reactionDelay);

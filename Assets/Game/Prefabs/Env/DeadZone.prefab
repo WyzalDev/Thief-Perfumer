@@ -104,6 +104,8 @@ MonoBehaviour:
   timeToDie: 3
   timeToHideSlider: 1.5
   slider: {fileID: 0}
+  fadePower: 0
+  DamageTickTime: 0.5
 --- !u!61 &2169550987794547755
 BoxCollider2D:
   m_ObjectHideFlags: 0
