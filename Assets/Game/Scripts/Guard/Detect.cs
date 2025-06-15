@@ -37,8 +37,8 @@ namespace Game.Scripts.Guard
         {
             while (_guard.GuardState is GuardState.Patrol or GuardState.Detect)
             {
-                yield return new WaitUntil(() => _currentDistanceToPlayer < _detectionRadius);
-                if (_currentDistanceToPlayer < _criticalDetectionRadius)
+                yield return new WaitUntil(() => _currentDistanceToPlayer <= _detectionRadius);
+                if (_currentDistanceToPlayer <= _criticalDetectionRadius)
                 {
                     EventManager.InvokeOnCriticalPlayerDetect(playerTransform.position);
                 }

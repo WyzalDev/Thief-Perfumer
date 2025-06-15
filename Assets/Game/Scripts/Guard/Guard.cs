@@ -1,9 +1,9 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using DG.Tweening;
 using Game.Scripts.Events;
+using Game.Scripts.SceneManagement;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -12,22 +12,23 @@ namespace Game.Scripts.Guard
     [RequireComponent(typeof(NavMeshAgent))]
     public class Guard : MonoBehaviour
     {
-        [Header("MovementSettings")] [SerializeField]
-        private float rotationSpeed;
+        [Header("MovementSettings")]
+        [SerializeField] private float rotationSpeed;
 
-        [Header("Patrol Settings")] [SerializeField]
-        private List<Transform> patrolPoints;
-
+        [Header("Patrol Settings")]
+        [SerializeField] private List<Transform> patrolPoints;
         [SerializeField] private float waitTimeAtPoint;
 
-        [Header("Detection Settings")] [SerializeField]
-        private float detectionRadius;
-
+        [Header("Detection Settings")]
+        [SerializeField] private float detectionRadius;
         [SerializeField] private float criticalDetectionRadius;
+        [SerializeField] private FieldOfView fov;
+        [SerializeField] private Material materialPatrol;
+        [SerializeField] private Material materialDetect;
+        [SerializeField] private Material materialCriticalDetect;
 
-        [Header("Reaction Settings")] [SerializeField]
-        private float reactionDelay;
-
+        [Header("Reaction Settings")]
+        [SerializeField] private float reactionDelay;
         [SerializeField] private float returnToPatrolWaitTime;
         public GuardState GuardState { get; private set; }
         public int GuardID { get; private set; }
@@ -66,6 +67,8 @@ namespace Game.Scripts.Guard
             _agent = GetComponent<NavMeshAgent>();
             EventManager.OnPlayerDetect += Detect;
             EventManager.OnCriticalPlayerDetect += CriticalDetect;
+            EventManager.PlayerGetTarget += EndGameBlock;
+            EventManager.PlayerCaught += EndGameBlock;
         }
 
         private void Start()
@@ -95,6 +98,9 @@ namespace Game.Scripts.Guard
 
                 transform.rotation = Quaternion.Euler(0, 0, _currentAngle);
             }
+            
+            fov.SetOrigin(transform.position);
+            fov.SetAimDirection(_agent.desiredVelocity.normalized);
         }
 
         private void SetState(GuardState newState)
@@ -105,9 +111,11 @@ namespace Game.Scripts.Guard
             switch (newState)
             {
                 case GuardState.Patrol:
+                    fov.SetMaterial(materialPatrol);
                     _stateCoroutine = StartCoroutine(PatrolState());
                     break;
                 case GuardState.Detect:
+                    fov.SetMaterial(materialDetect);
                     _stateCoroutine = StartCoroutine(DetectState());
                     break;
             }
@@ -168,14 +176,14 @@ namespace Game.Scripts.Guard
             _lastSeenPlayerPoint = playerPoint;
             _agent.SetDestination(_lastSeenPlayerPoint);
             _agent.isStopped = true;
-            
+
             var isAlreadyDetectState = GuardState == GuardState.Detect;
             SetState(GuardState.Detect);
 
             var direction = playerPoint - transform.position;
             var targetAngle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
             transform.DORotate(new Vector3(0, 0, targetAngle), reactionDelay / 10);
-            
+
             if (!isAlreadyDetectState)
                 yield return new WaitForSeconds(reactionDelay);
 
@@ -185,13 +193,14 @@ namespace Game.Scripts.Guard
         private void CriticalDetect(Vector3 playerPoint)
         {
             if (IsObstacleOnWay(playerPoint, criticalDetectionRadius)) return;
-
+            
             Debug.Log("Critical detect player");
             StopAllBehaviorCoroutines(true);
             GuardState = GuardState.CriticalDetect;
             _agent.isStopped = true;
             _guardsCount = 0;
 
+            fov.SetMaterial(materialCriticalDetect);
             EventManager.InvokePlayerCaught();
         }
 
@@ -224,10 +233,23 @@ namespace Game.Scripts.Guard
             GoToNextWayPoint(true);
         }
 
+        private void EndGameBlock(SceneName sceneName)
+        {
+            EndGameBlock();
+        }
+        
+        private void EndGameBlock()
+        {
+            StopAllBehaviorCoroutines();
+            _agent.isStopped = true;
+        }
+
         private void OnDestroy()
         {
             EventManager.OnPlayerDetect -= Detect;
             EventManager.OnCriticalPlayerDetect -= CriticalDetect;
+            EventManager.PlayerGetTarget -= EndGameBlock;
+            EventManager.PlayerCaught -= EndGameBlock;
         }
 
         private void OnDrawGizmosSelected()
